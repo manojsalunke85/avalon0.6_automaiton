@@ -206,7 +206,8 @@ aesm proxy = http://your-proxy:your-port
 
 Start aesm service on host machine  
 ```
-sudo source /opt/intel/libsgx-enclave-common/aesm/aesm_service
+sudo service aesmd restart
+sudo service aesmd status
 ```
 
 ### Remove Old `/dev/sgx` Intel SGX DCAP Driver
@@ -470,4 +471,45 @@ problems.
 - If you are not running in a corporate proxy environment (and not connected
   directly to Internet), comment out the `https_proxy` line in
   `config/tcs_config.toml`
+  
+- If you get an error `The repository 'https://download.docker.com/linux/ubuntu bionic Release' does not have a Release file.` when       trying to install Docker CE engine, you may be missing proxy configuration in /etc/apt/apt.conf or /etc/apt/apt.conf.d/. You can fix     this by specifying the proxy for all protocols: 
+  ```
+  Acquire::http::proxy "http://192.168.0.1:3128/";
+  Acquire::https::proxy "http://192.168.0.1:3128/";
+  Acquire::ftp::proxy "http://192.168.0.1:3128/"; 
+  ```
+  
+- If you get an error `Unable to find image 'hello-world:latest' locally` when trying to run docker hello-world, you may be missing the   proxy for docker. You can fix this by following the below commands:
 
+  Create a systemd drop-in directory for the docker service:
+  ```bash
+  mkdir /etc/systemd/system/docker.service.d
+  ```
+
+  Now create a file called /etc/systemd/system/docker.service.d/http-proxy.conf that adds the HTTP_PROXY environment variable:
+  ```
+  [Service]
+  Environment="HTTP_PROXY=http://proxy.example.com:80/"
+  ```
+
+  If you have internal Docker registries that you need to contact without proxying you can specify them via the NO_PROXY environment       variable:
+  ```
+  Environment="HTTP_PROXY=http://proxy.example.com:80/"
+  Environment="NO_PROXY=localhost,127.0.0.0/8,docker-registry.somecorporation.com"
+  ```
+  
+  Flush changes:
+  ```bash
+  sudo systemctl daemon-reload
+  ```
+
+  Verify that the configuration has been loaded:
+  ```bash
+  sudo systemctl show --property Environment docker
+  Environment=HTTP_PROXY=http://proxy.example.com:80/
+  ```
+  
+  Restart Docker:
+  ```bash
+  sudo systemctl restart docker
+  ```
