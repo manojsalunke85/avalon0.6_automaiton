@@ -28,7 +28,12 @@ Follow the instructions below to execute a Docker-based build and execution.
 
 1. Install Docker Engine and Docker Compose, if not already installed.
    See [PREREQUISITES](PREREQUISITES.md#docker) for instructions
-2. Build and run the Docker image from the top-level directory of your
+2. Download the Avalon source repository if you have not already done this:
+   ```bash
+   git clone https://github.com/hyperledger-labs/trusted-compute-framework
+   cd trusted-compute-framework
+   ```
+3. Build and run the Docker image from the top-level directory of your
    `trusted-compute-framework` source repository.
 
    **Intel SGX Simulator mode (for hosts without Intel SGX)**:
@@ -49,12 +54,12 @@ Follow the instructions below to execute a Docker-based build and execution.
    4. For subsequent runs on the same workspace, if you did not make any
       changes, startup and build time can be reduced by running:
       `MAKECLEAN=0 sudo -E docker-compose -f docker-compose-sgx.yaml up`
-3. On a successful run, you should see the message `BUILD SUCCESS`
+4. On a successful run, you should see the message `BUILD SUCCESS`
    followed by a repetitive message `Enclave manager sleeping for 10 secs`
-4. Open a Docker container shell using following command
+5. Open a Docker container shell using following command
    `sudo docker exec -it tcf bash`
-5. To execute test cases refer to [Testing](#testing) section below
-6. To exit the TCF program, press `Ctrl-c`
+6. To execute test cases refer to [Testing](#testing) section below
+7. To exit the TCF program, press `Ctrl-c`
 
 
 # <a name="standalonebuild"></a>Standalone Build
@@ -140,19 +145,20 @@ Follow these steps to run the `Demo.py` testcase:
       ["Docker-based Build and Execution"](#dockerbuild)
    2. Terminal 1 is running `docker-compose` and Terminal 2 is running the
       "tcf" Docker container shell from the previous build steps
-3. In Terminal 2, run `cd $TCF_HOME/tests`
-4. In Terminal 2, use this command to run the `Demo.py` test:
+3. In Terminal 2, open a Docker container shell using following command `sudo docker exec -it tcf bash`
+4. In Terminal 2, run `cd $TCF_HOME/tests`
+5. In Terminal 2, use this command to run the `Demo.py` test:
    ```bash
    python3 Demo.py --input_dir ./json_requests/ \
            --connect_uri "http://localhost:1947" work_orders/output.json
    ```
-5. The response to the Avalon listener and Intel&reg; SGX enclave Manager can be
+6. The response to the Avalon listener and Intel&reg; SGX enclave Manager can be
    seen at Terminal 1
-6. The response to the test case request can be seen at Terminal 2
-7. If you wish to exit the Avalon program, press `y` and `Enter` at Terminal 1
+7. The response to the test case request can be seen at Terminal 2
+8. If you wish to exit the Avalon program, press `y` and `Enter` at Terminal 1
    for standalone builds.
    For Docker-based builds, press `Ctrl-c`
-8. For standalone mode, delete virtual environment
+9. For standalone mode, delete virtual environment
    ```bash
    rm -rf $TCF_HOME/tools/build/_dev/
    ```
