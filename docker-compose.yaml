@@ -33,6 +33,7 @@ services:
       # Below volume mappings are required for DISPLAY settings by heart disease GUI client
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.Xauthority:/root/.Xauthority
+      - ./tests/validation_suite:/project/TrustedComputeFramework/tests/validation_suite
     working_dir: "/project/TrustedComputeFramework"
     command: |
       bash -c "

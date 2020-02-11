@@ -1,0 +1,30 @@
+{
+    "jsonrpc": "2.0",
+    "method": "WorkOrderSubmit",
+    "id": 11,
+    "params": {
+        "responseTimeoutMSecs": 6000,
+        "payloadFormat": "JSON-RPC",
+        "resultUri": "resulturi",
+        "notifyUri": "notifyuri",
+        "workOrderId": "",
+        "workerId": "",
+        "workloadId": "echo-result",
+        "requesterId": "0x3456",
+        "workerEncryptionKey": "",
+        "dataEncryptionAlgorithm": "AES-GCM-256",
+        "encryptedSessionKey": "",
+        "sessionKeyIv": "",
+        "requesterNonce": "",
+        "encryptedRequestHash": "",
+        "requesterSignature": "",
+        "inData": [
+                   {"index": 1,
+		    "dataHash": "",
+                    "data": "Hello World",
+                    "encryptedDataEncryptionKey": "-",
+                    "iv": ""
+                   }
+        ]
+    }
+}

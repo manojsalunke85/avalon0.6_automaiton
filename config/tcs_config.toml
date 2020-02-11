@@ -23,6 +23,9 @@ remote_url = "http://localhost:9090"
 LogLevel = "INFO"
 LogFile  = "__screen__"
 
+[tcf]
+json_rpc_uri = "http://localhost:1947"
+
 # -------------------------------------------------------------------
 # EnclaveManager -- configuration of Intel SGX Enclave EnclaveManager
 # -------------------------------------------------------------------

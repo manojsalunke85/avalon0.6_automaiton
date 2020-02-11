@@ -1,0 +1,76 @@
+2020-02-11 06:55:11 INFO configuration for the session: {'tcf': {'json_rpc_uri': 'http://localhost:1947'}, 'KvStorage': {'remote_url': 'http://localhost:9090'}, 'Logging': {'LogLevel': 'INFO', 'LogFile': '__screen__'}, 'EnclaveManager': {'sleep_interval': '10'}, 'Listener': {'listener_port': 1947, 'max_work_order_count': 10}, 'EnclaveModule': {'spid': 'DEADBEEF00000000DEADBEEF00000000', 'num_of_enclaves': '1', 'ias_url': 'https://api.trustedservices.intel.com/sgx/dev', 'ias_api_key': '112233445566778899aabbccddeeff00', 'enclave_library': 'libtcf-enclave.signed.so', 'enclave_library_path': 'tc/sgx/trusted_worker_manager/enclave/build/lib/'}, 'WorkerConfig': {'ProofDataType': 'TEE-SGX-IAS', 'WorkOrderSyncUri': 'http://localhost:8080', 'WorkOrderAsyncUri': 'http://localhost:8080', 'WorkOrderPullUri': 'http://localhost:8080', 'WorkOrderNotifyUri': 'http://localhost:8080', 'ApplicationTypeId': '11aa22bb33cc44dd', 'OrganizationId': 'aabbcc1234ddeeff', 'ReceiptInvocationUri': 'http://localhost:8080', 'WorkOrderInvocationAddress': '', 'ReceiptInvocationAddress': '', 'FromAddress': '', 'HashingAlgorithm': 'SHA-256', 'SigningAlgorithm': 'SECP256K1', 'KeyEncryptionAlgorithm': 'RSA-OAEP-3072', 'DataEncryptionAlgorithm': 'AES-GCM-256', 'workOrderPayloadFormats': 'JSON-RPC'}}
+2020-02-11 06:55:11 INFO URI Client string http://localhost:1947
+2020-02-11 06:55:11 INFO ------------------Testing WorkerLookUp------------------
+2020-02-11 06:55:11 INFO ********Received Request*******
+{'jsonrpc': '2.0', 'method': 'WorkerLookUp', 'id': 1, 'params': {'workerType': 1}}
+
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerLookUp", "id": 1, "params": {"workerType": 1}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'totalCount': 1, 'lookupTag': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d', 'ids': ['4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d']}, 'id': 1, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'totalCount': 1, 'lookupTag': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d', 'ids': ['4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d']}, 'id': 1, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO -----Testing WorkerRetrieve-----
+2020-02-11 06:55:11 INFO *****Worker details Updated with Worker ID*****                            
+{'jsonrpc': '2.0', 'method': 'WorkerRetrieve', 'id': 2, 'params': {'workerId': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d'}}
+
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerRetrieve", "id": 2, "params": {"workerId": "4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d"}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'workerType': 1, 'organizationId': 'aabbcc1234ddeeff', 'applicationTypeId': '11aa22bb33cc44dd', 'details': {'workOrderSyncUri': 'http://localhost:8080', 'workOrderAsyncUri': 'http://localhost:8080', 'workOrderPullUri': 'http://localhost:8080', 'workOrderNotifyUri': 'http://localhost:8080', 'receiptInvocationUri': 'http://localhost:8080', 'workOrderInvocationAddress': '', 'receiptInvocationAddress': '', 'fromAddress': '', 'hashingAlgorithm': 'SHA-256', 'signingAlgorithm': 'SECP256K1', 'keyEncryptionAlgorithm': 'RSA-OAEP-3072', 'dataEncryptionAlgorithm': 'AES-GCM-256', 'workOrderPayloadFormats': 'JSON-RPC', 'workerTypeData': {'verificationKey': '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEPETdt2RbKz71HgufjA5fZGZoztH5Om1s\nJTYFhKYXpFKVs7Z9QYenAvLU7HDxqxRFZchLbs+ojghDmMTG0GGjHg==\n-----END PUBLIC KEY-----\n', 'extendedMeasurements': ['DEADBEEF00000000DEADBEEF0000000000000000000000000000000000000000', '806C6BA907858EEF19E348285E7990CF3B2CD9F5E68F87A9087036C504602BB0'], 'proofDataType': 'TEE-SGX-IAS', 'proofData': '', 'encryptionKey': '-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEArzPbyPD8ki3Dv4JzA3Th+OwDnnLk35Ffm0Aq5VKXXqqEd8Zr2Q3j\ny+rlnyffkt04/LyEwoCADzcqzissx/P3zZ1ATLe4RPB8/cBIMromV4fDH9rRMkzn\nfw/E5vQL69hzij2VSukfxyrQwCrCLJlboiw1cvRBfLun1PgyCYHvMFNsneoBi76P\nczmjh9Y0GUWntEhSWv/rLRCQU6OjATFRfhjNLIHibnOVpfg7UtiDj5XjVvX6u8KG\nfRcJn9k0XLyRmWfEzEvutFoj81tiKat2VxeX6RZ/owFdWvyw1584Af/ihDk15FMM\nLVDBBYvTKFhmDDE92yb6I6w7KsET4kp70QIDAQAB\n-----END RSA PUBLIC KEY-----\n', 'encryptionKeySignature': ''}}, 'status': 1}, 'id': 2, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO *********Updating Worker Details*********
+2020-02-11 06:55:11 INFO Hashing Algorithm : SHA-256
+2020-02-11 06:55:11 INFO Signing Algorithm : SECP256K1
+2020-02-11 06:55:11 INFO ----- Testing Worker Actions -----
+2020-02-11 06:55:11 INFO ----- Constructing Request from input json -----
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerLookUp", "id": 3, "params": {"workerType": 1}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'totalCount': 1, 'lookupTag': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d', 'ids': ['4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d']}, 'id': 3, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO 		!!! Test completed !!!
+
+
+2020-02-11 06:55:11 INFO ------------------Testing WorkerLookUp------------------
+2020-02-11 06:55:11 INFO ********Received Request*******
+{'jsonrpc': '2.0', 'method': 'WorkerLookUp', 'id': 1, 'params': {'workerType': 1}}
+
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerLookUp", "id": 1, "params": {"workerType": 1}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'totalCount': 1, 'lookupTag': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d', 'ids': ['4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d']}, 'id': 1, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'totalCount': 1, 'lookupTag': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d', 'ids': ['4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d']}, 'id': 1, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO -----Testing WorkerRetrieve-----
+2020-02-11 06:55:11 INFO *****Worker details Updated with Worker ID*****                            
+{'jsonrpc': '2.0', 'method': 'WorkerRetrieve', 'id': 2, 'params': {'workerId': '4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d'}}
+
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerRetrieve", "id": 2, "params": {"workerId": "4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d"}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'workerType': 1, 'organizationId': 'aabbcc1234ddeeff', 'applicationTypeId': '11aa22bb33cc44dd', 'details': {'workOrderSyncUri': 'http://localhost:8080', 'workOrderAsyncUri': 'http://localhost:8080', 'workOrderPullUri': 'http://localhost:8080', 'workOrderNotifyUri': 'http://localhost:8080', 'receiptInvocationUri': 'http://localhost:8080', 'workOrderInvocationAddress': '', 'receiptInvocationAddress': '', 'fromAddress': '', 'hashingAlgorithm': 'SHA-256', 'signingAlgorithm': 'SECP256K1', 'keyEncryptionAlgorithm': 'RSA-OAEP-3072', 'dataEncryptionAlgorithm': 'AES-GCM-256', 'workOrderPayloadFormats': 'JSON-RPC', 'workerTypeData': {'verificationKey': '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEPETdt2RbKz71HgufjA5fZGZoztH5Om1s\nJTYFhKYXpFKVs7Z9QYenAvLU7HDxqxRFZchLbs+ojghDmMTG0GGjHg==\n-----END PUBLIC KEY-----\n', 'extendedMeasurements': ['DEADBEEF00000000DEADBEEF0000000000000000000000000000000000000000', '806C6BA907858EEF19E348285E7990CF3B2CD9F5E68F87A9087036C504602BB0'], 'proofDataType': 'TEE-SGX-IAS', 'proofData': '', 'encryptionKey': '-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEArzPbyPD8ki3Dv4JzA3Th+OwDnnLk35Ffm0Aq5VKXXqqEd8Zr2Q3j\ny+rlnyffkt04/LyEwoCADzcqzissx/P3zZ1ATLe4RPB8/cBIMromV4fDH9rRMkzn\nfw/E5vQL69hzij2VSukfxyrQwCrCLJlboiw1cvRBfLun1PgyCYHvMFNsneoBi76P\nczmjh9Y0GUWntEhSWv/rLRCQU6OjATFRfhjNLIHibnOVpfg7UtiDj5XjVvX6u8KG\nfRcJn9k0XLyRmWfEzEvutFoj81tiKat2VxeX6RZ/owFdWvyw1584Af/ihDk15FMM\nLVDBBYvTKFhmDDE92yb6I6w7KsET4kp70QIDAQAB\n-----END RSA PUBLIC KEY-----\n', 'encryptionKeySignature': ''}}, 'status': 1}, 'id': 2, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO *********Updating Worker Details*********
+2020-02-11 06:55:11 INFO Hashing Algorithm : SHA-256
+2020-02-11 06:55:11 INFO Signing Algorithm : SECP256K1
+2020-02-11 06:55:11 INFO ----- Testing Worker Actions -----
+2020-02-11 06:55:11 INFO ----- Constructing Request from input json -----
+2020-02-11 06:55:11 INFO **********Received Request*********
+{"jsonrpc": "2.0", "method": "WorkerRetrieve", "id": 11, "params": {"workerId": "4d465977454159484b6f5a497a6a3043415159464b34454541416f445167414550455464743252624b7a3731486775666a4135665a475a6f7a7448354f6d31734a545946684b595870464b5673375a395159656e41764c5537484478717852465a63684c62732b6f6a6768446d4d54473047476a48673d3d"}}
+
+2020-02-11 06:55:11 INFO **********Received Response*********
+{'result': {'workerType': 1, 'organizationId': 'aabbcc1234ddeeff', 'applicationTypeId': '11aa22bb33cc44dd', 'details': {'workOrderSyncUri': 'http://localhost:8080', 'workOrderAsyncUri': 'http://localhost:8080', 'workOrderPullUri': 'http://localhost:8080', 'workOrderNotifyUri': 'http://localhost:8080', 'receiptInvocationUri': 'http://localhost:8080', 'workOrderInvocationAddress': '', 'receiptInvocationAddress': '', 'fromAddress': '', 'hashingAlgorithm': 'SHA-256', 'signingAlgorithm': 'SECP256K1', 'keyEncryptionAlgorithm': 'RSA-OAEP-3072', 'dataEncryptionAlgorithm': 'AES-GCM-256', 'workOrderPayloadFormats': 'JSON-RPC', 'workerTypeData': {'verificationKey': '-----BEGIN PUBLIC KEY-----\nMFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEPETdt2RbKz71HgufjA5fZGZoztH5Om1s\nJTYFhKYXpFKVs7Z9QYenAvLU7HDxqxRFZchLbs+ojghDmMTG0GGjHg==\n-----END PUBLIC KEY-----\n', 'extendedMeasurements': ['DEADBEEF00000000DEADBEEF0000000000000000000000000000000000000000', '806C6BA907858EEF19E348285E7990CF3B2CD9F5E68F87A9087036C504602BB0'], 'proofDataType': 'TEE-SGX-IAS', 'proofData': '', 'encryptionKey': '-----BEGIN RSA PUBLIC KEY-----\nMIIBCgKCAQEArzPbyPD8ki3Dv4JzA3Th+OwDnnLk35Ffm0Aq5VKXXqqEd8Zr2Q3j\ny+rlnyffkt04/LyEwoCADzcqzissx/P3zZ1ATLe4RPB8/cBIMromV4fDH9rRMkzn\nfw/E5vQL69hzij2VSukfxyrQwCrCLJlboiw1cvRBfLun1PgyCYHvMFNsneoBi76P\nczmjh9Y0GUWntEhSWv/rLRCQU6OjATFRfhjNLIHibnOVpfg7UtiDj5XjVvX6u8KG\nfRcJn9k0XLyRmWfEzEvutFoj81tiKat2VxeX6RZ/owFdWvyw1584Af/ihDk15FMM\nLVDBBYvTKFhmDDE92yb6I6w7KsET4kp70QIDAQAB\n-----END RSA PUBLIC KEY-----\n', 'encryptionKeySignature': ''}}, 'status': 1}, 'id': 11, 'jsonrpc': '2.0'}
+
+2020-02-11 06:55:11 INFO 		!!! Test completed !!!
+
+
