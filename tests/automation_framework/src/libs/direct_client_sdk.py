@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import secrets
+import sys
 
 import config.config as pconfig
 import crypto_utils.crypto_utility as crypto_utility
@@ -27,15 +28,40 @@ logger = logging.getLogger(__name__)
 TCFHOME = os.environ.get("TCF_HOME", "../../")
 
 
-def _lookup_first_worker(worker_registry, jrpc_req_id):
-    # Get first worker id from worker registry
-    worker_id = None
-    worker_lookup_result = worker_registry.worker_lookup(
-        worker_type=WorkerType.TEE_SGX, id=jrpc_req_id
+def worker_lookup_sdk(jrpc_req_id, input_json=None):
+    conffiles = ["tcs_config.toml"]
+    confpaths = [".", TCFHOME + "/config", "../../etc"]
+    config = pconfig.parse_configuration_files(conffiles, confpaths)
+
+    worker_dict = {'SGX': WorkerType.TEE_SGX,
+                   'MPC': WorkerType.MPC, 'ZK': WorkerType.ZK}
+    if input_json is None:
+        worker_type = 'SGX'
+    else:
+        try:
+            worker_value = input_json["params"]["workerType"]
+            if worker_value == 1:
+                worker_type = 'SGX'
+            elif worker_value == 2:
+                worker_type = 'MPC'
+            elif worker_value == 3:
+                worker_type = 'ZK'
+        except LookupError:
+            worker_type = ""
+
+    worker_registry = WorkerRegistryJRPCClientImpl(config)
+
+    worker_lookup_response = worker_registry.worker_lookup(
+        worker_type=worker_dict[worker_type], id=jrpc_req_id
     )
     logger.info("\n Worker lookup response: {}\n".format(
-        json.dumps(worker_lookup_result, indent=4)
+        json.dumps(worker_lookup_response, indent=4)
     ))
+
+    return worker_lookup_response, worker_registry
+
+
+def get_worker_id_sdk(worker_lookup_result):
     if "result" in worker_lookup_result and \
             "ids" in worker_lookup_result["result"].keys():
         if worker_lookup_result["result"]["totalCount"] != 0:
@@ -50,13 +76,44 @@ def _lookup_first_worker(worker_registry, jrpc_req_id):
     return worker_id
 
 
-def _create_work_order_params(worker_id, workload_id, in_data,
-                              worker_encrypt_key):
+def worker_retrieve_details_sdk(worker_registry, jrpc_req_id, worker_id):
+    jrpc_req_id += 1
+    worker_retrieve_result = worker_registry.worker_retrieve(
+        worker_id, jrpc_req_id
+    )
+    logger.info("\n Worker retrieve response: {}\n".format(
+        json.dumps(worker_retrieve_result, indent=4)
+    ))
+
+    if "error" in worker_retrieve_result:
+        logger.error("Unable to retrieve worker details\n")
+        sys.exit(1)
+
+    return worker_retrieve_result
+
+
+def worker_initialize_sdk(worker_retrieve_result, worker_id):
+    # Initializing Worker Object
+    worker_obj = worker_details.SGXWorkerDetails()
+    worker_obj.load_worker(worker_retrieve_result)
+
+    logger.info("**********Worker details Updated with Worker ID" +
+                "*********\n%s\n", worker_id)
+
+    return worker_obj
+
+
+def _create_work_order_params(input_json_obj, worker_obj):
 
     # Create session key and iv to sign work order request
     session_key = crypto_utility.generate_key()
     session_iv = crypto_utility.generate_iv()
-
+    logger.info("JSON object %s \n", input_json_obj)
+    worker_id = worker_obj.worker_id
+    workload_id = input_json_obj["params"]["workloadId"]
+    in_data = input_json_obj["params"]["inData"]
+    worker_encrypt_key = worker_obj.encryption_key
+    logger.info("workload_id %s \n", workload_id)
     # Convert workloadId to hex
     workload_id = workload_id.encode("UTF-8").hex()
     work_order_id = secrets.token_hex(32)
@@ -70,9 +127,12 @@ def _create_work_order_params(worker_id, workload_id, in_data,
         worker_encryption_key=worker_encrypt_key,
         data_encryption_algorithm="AES-GCM-256"
     )
+    logger.info("In data %s \n", in_data)
     # Add worker input data
-    for value in in_data:
-        wo_params.add_in_data(value["data"])
+    for rows in in_data:
+        for k, v in rows.items():
+            if k == "data":
+                wo_params.add_in_data(rows["data"])
 
     # Encrypt work order request hash
     wo_params.add_encrypted_request_hash()
@@ -80,8 +140,8 @@ def _create_work_order_params(worker_id, workload_id, in_data,
     return wo_params
 
 
-def _create_work_order_receipt(wo_receipt, wo_params,
-                               client_private_key, jrpc_req_id):
+def create_work_order_receipt(wo_receipt, wo_params,
+                              client_private_key, jrpc_req_id):
     # Create work order receipt object using WorkOrderReceiptRequest class
     # This fuction will send WorkOrderReceiptCreate json rpc request
     wo_request = json.loads(wo_params.to_jrpc_string(jrpc_req_id))
@@ -168,7 +228,9 @@ def _verify_wo_res_signature(work_order_res,
     return True
 
 
-def submit_work_order_client_sdk(wo_params, id):
+def submit_work_order_client_sdk(input_json_obj, worker_obj):
+    wo_params = _create_work_order_params(input_json_obj, worker_obj)
+    req_id = input_json_obj["id"]
     conffiles = ["tcs_config.toml"]
     confpaths = [".", TCFHOME + "/config", "../../etc"]
     config = pconfig.parse_configuration_files(conffiles, confpaths)
@@ -178,21 +240,23 @@ def submit_work_order_client_sdk(wo_params, id):
         wo_params.get_worker_id(),
         wo_params.get_requester_id(),
         wo_params.to_string(),
-        id=id
+        id=req_id
     )
     logger.info("Work order submit response : {}\n ".format(
         json.dumps(response, indent=4)
     ))
 
-    return response, work_order
+    return response, work_order, wo_params
 
 
-def get_work_order_result(work_order, wo_params, id):
-    res = work_order.work_order_get_result(
+def get_work_order_result_sdk(work_order, wo_params, id):
+    work_order_get_result_response = work_order.work_order_get_result(
         wo_params.get_work_order_id(),
         id
     )
 
     logger.info("Work order get result : {}\n ".format(
-        json.dumps(res, indent=4)
+        json.dumps(work_order_get_result_response, indent=4)
     ))
+
+    return work_order_get_result_response

@@ -146,9 +146,9 @@ def response_signature_verification(response, worker_obj, work_order_obj):
     return TestStep.SUCCESS.value
 
 
-def check_worker_lookup_response(response):
+def check_worker_lookup_response(response, operator, value):
 
-    if response["result"]["totalCount"] > 0:
+    if operator(response["result"]["totalCount"], value):
         err_cd = 0
     else:
         err_cd = 1

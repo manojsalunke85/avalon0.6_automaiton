@@ -32,12 +32,12 @@ worker_lookup_output_json_file_name = "worker_lookup"
 
 worker_request_id = 0
 
-worker_retrieve_output_json_file_name = "worker_lookup"
+worker_retrieve_output_json_file_name = "worker_retrieve"
 
 worker_retrieve_tamper = {"params": {}}
 
 # Direct test mode = listener or client_sdk
-direct_test_mode = "listener"
+direct_test_mode = "sdk"
 
 # Config file path
 conffiles = ["tcs_config.toml"]
