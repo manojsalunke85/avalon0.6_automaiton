@@ -17,7 +17,8 @@ import logging
 import os
 from src.libs import constants
 from src.utilities.verification_utils \
-    import check_worker_lookup_response, check_worker_retrieve_response
+    import check_worker_lookup_response, check_worker_retrieve_response, \
+    validate_response_code
 from src.libs.avalon_test_wrapper \
     import read_json, run_test
 from src.utilities.generic_utils import TestStep
@@ -116,5 +117,52 @@ def test_worker_lookup_jsonrpc_different_version(setup_config):
     response = run_test(input_json_obj, setup_config)
 
     assert (check_worker_lookup_response(response, operator.gt, 0)
+            is TestStep.SUCCESS.value)
+    logger.info('\t\t!!! Test completed !!!\n\n')
+
+
+def test_worker_set_status(setup_config):
+    """ Testing set status request with all valid parameter values. """
+
+    # retrieve values from conftest session fixture
+    request_file = os.path.join(
+        constants.worker_input_file,
+        "worker_set_status.json")
+
+    input_json_obj = read_json(request_file)
+
+    response = run_test(input_json_obj, setup_config)
+
+    assert (validate_response_code(response)
+            is TestStep.SUCCESS.value)
+    logger.info('\t\t!!! Test completed !!!\n\n')
+
+
+def test_worker_set_status_invalid_parameter(setup_config):
+    """ Testing set status request with all invalid parameter values. """
+    request_file = os.path.join(
+        constants.worker_input_file,
+        "worker_set_status_invalid_parameter.json")
+
+    input_json_obj = read_json(request_file)
+
+    response = run_test(input_json_obj, setup_config)
+
+    assert (validate_response_code(response)
+            is TestStep.SUCCESS.value)
+    logger.info('\t\t!!! Test completed !!!\n\n')
+
+
+def test_worker_set_status_unknown_parameter(setup_config):
+    """ Testing set status request with all valid parameter values. """
+    request_file = os.path.join(
+        constants.worker_input_file,
+        "worker_set_status_unknown_parameter.json")
+
+    input_json_obj = read_json(request_file)
+
+    response = run_test(input_json_obj, setup_config)
+
+    assert (validate_response_code(response)
             is TestStep.SUCCESS.value)
     logger.info('\t\t!!! Test completed !!!\n\n')

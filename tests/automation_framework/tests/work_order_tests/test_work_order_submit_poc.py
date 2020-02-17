@@ -30,7 +30,7 @@ def test_work_order_success(setup_config):
     """ Testing work order request with all valid parameter values. """
 
     # input file name
-
+    logger.info('\t\t!!! Test started !!!\n\n')
     request_file = os.path.join(
         constants.work_order_input_file,
         "work_order_success.json")

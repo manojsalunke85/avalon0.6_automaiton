@@ -36,8 +36,12 @@ worker_retrieve_output_json_file_name = "worker_retrieve"
 
 worker_retrieve_tamper = {"params": {}}
 
+worker_status_tamper = {"params": {}}
+
+worker_status_output_json_file_name = 'worker_set_status'
+
 # Direct test mode = listener or client_sdk
-direct_test_mode = "sdk"
+direct_test_mode = "listener"
 
 # Config file path
 conffiles = ["tcs_config.toml"]

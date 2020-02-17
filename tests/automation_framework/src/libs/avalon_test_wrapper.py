@@ -13,7 +13,8 @@ from src.libs.direct_client_sdk import \
     worker_initialize_sdk
 
 from src.libs.listener import \
-    worker_lookup_listener, worker_retrieve_listener
+    worker_lookup_listener, worker_retrieve_listener, \
+    work_setstatus_listener
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +30,6 @@ def read_json(request_file):
 
 def run_test(input_json_obj, setup_config):
 
-    uri_client = setup_config
     input_method = input_json_obj["method"]
 
     # private_key of client
@@ -44,11 +44,7 @@ def run_test(input_json_obj, setup_config):
             err_cd : Status of previous request (worker retrieve)
             Success or Fail.
             """
-
-            lookup_response = worker_lookup_listener(uri_client)
-
-            worker_obj, err_cd, retrieve_response = \
-                worker_retrieve_listener(lookup_response, uri_client)
+            uri_client, worker_obj, err_cd, retrieve_response = setup_config
 
             (err_cd, work_order_submit_response,
              final_json_str, work_order_obj) = submit_work_order(
@@ -87,6 +83,7 @@ def run_test(input_json_obj, setup_config):
             """
 
             logger.info("Inside WorkerLookup for Listener\n")
+            uri_client = setup_config
             worker_response = worker_lookup_listener(
                 uri_client, input_json_obj)
 
@@ -94,10 +91,26 @@ def run_test(input_json_obj, setup_config):
 
         elif input_method == "WorkerRetrieve":
             logger.info("Inside WorkerRetrieve for Listener\n")
+            uri_client = setup_config
             worker_response = worker_lookup_listener(uri_client)
 
             worker_obj, err_cd, worker_response = \
-                worker_retrieve_listener(worker_response, uri_client)
+                worker_retrieve_listener(
+                    worker_response, uri_client, input_json_obj)
+
+            return worker_response
+
+        elif input_method == "WorkerSetStatus":
+            logger.info("Inside WorkerSetStatus for Listener\n")
+            uri_client = setup_config
+            worker_response = worker_lookup_listener(uri_client)
+
+            worker_obj, err_cd, worker_retrieve_response = \
+                worker_retrieve_listener(
+                    worker_response, uri_client, input_json_obj)
+
+            worker_response = work_setstatus_listener(
+                worker_obj, uri_client, input_json_obj)
 
             return worker_response
 
