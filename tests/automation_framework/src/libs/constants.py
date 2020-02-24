@@ -45,7 +45,7 @@ worker_status_output_json_file_name = 'worker_set_status'
 wo_result_output_json_file_name = "worker_get_result"
 
 # Direct test mode = listener or client_sdk
-direct_test_mode = "sdk"
+direct_test_mode = "listener"
 
 # Config file path
 conffiles = ["tcs_config.toml"]

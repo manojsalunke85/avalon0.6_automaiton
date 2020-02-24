@@ -27,7 +27,7 @@ from src.work_order_get_result.work_order_get_result_params \
     import WorkOrderGetResult
 import avalon_client_sdk.worker.worker_details as worker
 from src.libs.avalon_test_wrapper \
-    import process_input, run_test, read_json
+    import process_input, read_json
 from src.utilities.generic_utils import TestStep
 from src.utilities.submit_request_utility import \
     submit_request, submit_create_receipt_sdk

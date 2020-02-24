@@ -34,127 +34,85 @@ def read_config(request_file):
     return raw_input_json
 
 
-def pre_test(setup_config):
+def pre_cycle(setup_config):
     uri_client = setup_config
     logger.info("****URI Client******\n%s\n", uri_client)
     return uri_client
 
 
 @pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup
 @pytest.mark.listener
-@pytest.mark.sdk
-def test_worker_lookup(setup_config):
+@pytest.mark.test_worker_set_status
+def test_worker_set_status(setup_config):
     request_file = os.path.join(
         constants.worker_input_file,
-        "worker_lookup.json")
+        "worker_set_status.json")
 
-    uri_client = pre_test(setup_config)
+    uri_client = pre_cycle(setup_config)
 
-    output_obj, action_obj = process_input(
+    test_final_json, work_order_obj = process_input(
         read_config(request_file))
 
     if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
+            uri_client, test_final_json,
             constants.worker_lookup_output_json_file_name)
-    else:
-        response = submit_lookup_sdk(
-            output_obj, read_config(request_file))
 
     logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.gt, 0)
+    assert (validate_response_code(response)
             is TestStep.SUCCESS.value)
 
     logger.info('\t\t!!! Test completed !!!\n\n')
 
 
 @pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_workerType_not_unsigned_int
+@pytest.mark.test_worker_set_status_unknown_parameter
 @pytest.mark.listener
-def test_worker_lookup_workerType_not_unsigned_int(setup_config):
+def test_worker_set_status_unknown_parameter(setup_config):
     request_file = os.path.join(
         constants.worker_input_file,
-        "worker_lookup_workerType_not_unsigned_int.json")
+        "worker_set_status_unknown_parameter.json")
 
-    uri_client = pre_test(setup_config)
+    uri_client = pre_cycle(setup_config)
 
-    output_obj, action_obj = process_input(
+    test_final_json, work_order_obj = process_input(
         read_config(request_file))
 
     if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
+            uri_client, test_final_json,
             constants.worker_lookup_output_json_file_name)
-    else:
-        logger.info("***Test not applicable for SDK Direct mode ****\n")
 
     logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.eq, 0)
+    assert (validate_response_code(response)
             is TestStep.SUCCESS.value)
 
     logger.info('\t\t!!! Test completed !!!\n\n')
 
 
 @pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_empty_params
+@pytest.mark.test_worker_set_status_invalid_parameter
 @pytest.mark.listener
-def test_worker_lookup_empty_params(setup_config):
+def test_worker_set_status_invalid_parameter(setup_config):
     request_file = os.path.join(
         constants.worker_input_file,
-        "worker_lookup_empty_params.json")
+        "worker_set_status_invalid_parameter.json")
 
-    uri_client = pre_test(setup_config)
+    uri_client = pre_cycle(setup_config)
 
-    output_obj, action_obj = process_input(
+    test_final_json, work_order_obj = process_input(
         read_config(request_file))
 
     if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
+            uri_client, test_final_json,
             constants.worker_lookup_output_json_file_name)
-    else:
-        logger.info("***Test not applicable for SDK Direct mode ****\n")
 
     logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.gt, 0)
-            is TestStep.SUCCESS.value)
-
-    logger.info('\t\t!!! Test completed !!!\n\n')
-
-
-@pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_jsonrpc_different_version
-@pytest.mark.listener
-@pytest.mark.sdk
-def test_worker_lookup_jsonrpc_different_version(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_lookup_jsonrpc_different_version.json")
-
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
-        response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
-    else:
-        response = submit_lookup_sdk(
-            output_obj, read_config(request_file))
-
-    logger.info("**********Received Response*********\n%s\n", response)
-
-    assert (check_worker_lookup_response(response, operator.gt, 0)
+    assert (validate_response_code(response)
             is TestStep.SUCCESS.value)
 
     logger.info('\t\t!!! Test completed !!!\n\n')
