@@ -15,39 +15,44 @@
 import pytest
 import logging
 import json
+import random
 
-from automation_framework.utilities.post_request import \
+from src.utilities.post_request import \
     post_request
-from automation_framework.utilities.request_args import TestStep
-from automation_framework.utilities.workflow import validate_response_code
+from src.utilities.request_args import TestStep
+from src.utilities.workflow import validate_response_code
 
 logger = logging.getLogger(__name__)
 
 
-def test_worker_set_status_invalid_parameter(setup_config):
-    """ Testing set status request with all invalid parameter values. """
+def test_worker_retrieve(setup_config):
+    """ Testing worker retrieve  request with all valid parameter values. """
 
     # retrieve values from conftest session fixture
     worker_obj, uri_client, private_key, err_cd = setup_config[:4]
+
     # input and output names
-    request = './worker_tests/input/worker_set_status_invalid_parameter.json'
+    request = './worker_tests/input/worker_retrieve.json'
     request_mode = 'file'
-    output_json_file_name = 'worker_set_status'
+    output_json_file_name = 'worker_retrieve'
     tamper = {"params": {}}
     request_method = ""
     request_id = 0
-
-    # submit worker set status
+    # worker retrieve
     request_tup = (request, request_mode, tamper, output_json_file_name,
                    uri_client, request_method, worker_obj,
                    request_id)
+    #  check_worker_result = {"result": {"workerType": 1}}
 
     response_tup = post_request(request_tup)
 
     response = response_tup[1]
 
-    # validate work order response and get error code
-    err_cd = validate_response_code(response)
+    if response["result"]["workerType"] == 1:
+
+        err_cd = 0
+    else:
+        err_cd = 1
 
     assert err_cd == TestStep.SUCCESS.value
     logger.info('\t\t!!! Test completed !!!\n\n')

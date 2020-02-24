@@ -6,6 +6,8 @@ work_order_input_file = os.path.join(os.getcwd(), 'data', 'work_order')
 
 worker_input_file = os.path.join(os.getcwd(), 'data', 'worker')
 
+work_order_receipt = os.path.join(os.getcwd(), 'data', 'receipt')
+
 # expected response
 check_submit = {"error": {"code": 5}}
 
@@ -40,9 +42,11 @@ worker_status_tamper = {"params": {}}
 
 worker_status_output_json_file_name = 'worker_set_status'
 
+wo_result_output_json_file_name = "worker_get_result"
+
 # Direct test mode = listener or client_sdk
-direct_test_mode = "listener"
+direct_test_mode = "sdk"
 
 # Config file path
 conffiles = ["tcs_config.toml"]
-confpaths = [".", TCFHOME + "/config"]
+confpaths = [".", TCFHOME + "/config", "../../etc"]

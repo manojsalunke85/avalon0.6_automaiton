@@ -14,8 +14,8 @@
 
 import json
 import logging
-import random
-
+import avalon_client_sdk.worker.worker_details as worker
+import crypto_utils.crypto_utility as crypto_utils
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +23,9 @@ class WorkerRetrieve():
     def __init__(self):
         self.id_obj = {"jsonrpc": "2.0", "method": "WorkerRetrieve", "id": 2}
         self.params_obj = {}
+        self.request_mode = "file"
+        self.tamper = {"params": {}}
+        self.output_json_file_name = "worker_retrieve"
 
     def add_json_values(self, input_json_temp, worker_obj, tamper):
 
@@ -58,3 +61,34 @@ class WorkerRetrieve():
         json_rpc_request["params"] = self.get_params()
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(
+            self, input_json, worker_obj, pre_test_response):
+        worker_obj = worker.SGXWorkerDetails()
+        if input_json is not None:
+            self.add_json_values(
+                input_json, worker_obj, self.tamper)
+        self.set_worker_id(
+            crypto_utils.strip_begin_end_public_key
+            (pre_test_response["result"]["ids"][0]))
+
+        input_worker_retrieve = json.loads(self.to_string())
+        logger.info('*****Worker details Updated with Worker ID***** \
+                           \n%s\n', input_worker_retrieve)
+        return input_worker_retrieve
+
+    def configure_data_sdk(
+            self, input_json, worker_obj, pre_test_response):
+
+        if "result" in pre_test_response and \
+                "ids" in pre_test_response["result"].keys():
+            if pre_test_response["result"]["totalCount"] != 0:
+                worker_id = pre_test_response["result"]["ids"][0]
+            else:
+                logger.error("ERROR: No workers found")
+                worker_id = None
+        else:
+            logger.error("ERROR: Failed to lookup worker")
+            worker_id = None
+
+        return worker_id

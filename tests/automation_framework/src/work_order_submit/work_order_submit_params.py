@@ -15,10 +15,14 @@
 import json
 import logging
 import random
-
+import os
 import crypto_utils.crypto.crypto as crypto
 import crypto_utils.crypto_utility as crypto_utils
 from src.utilities.tamper_utility import tamper_request
+import crypto_utils.crypto_utility as enclave_helper
+from src.libs import constants
+import secrets
+from avalon_client_sdk.work_order.work_order_params import WorkOrderParams
 
 logger = logging.getLogger(__name__)
 NO_OF_BYTES = 16
@@ -31,6 +35,9 @@ class WorkOrderSubmit():
         self.params_obj = {}
         self.session_key = self.generate_key()
         self.session_iv = self.generate_iv()
+        self.request_mode = "file"
+        self.tamper = {"params": {}}
+        self.output_json_file_name = "worker_submit"
 
     def add_json_values(self, input_json_temp, worker_obj,
                         private_key, tamper):
@@ -563,3 +570,58 @@ class WorkOrderSubmit():
             json_rpc_request["params"]["outData"] = out_data
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(
+            self, input_json, worker_obj, pre_test_response):
+        # private_key of client
+        private_key = enclave_helper.generate_signing_keys()
+        if input_json is None:
+            with open(os.path.join(
+                    constants.work_order_input_file,
+                    "work_order_success.json"), "r") as file:
+                input_json = file.read().rstrip('\n')
+
+            input_json = json.loads(input_json)
+
+        self.add_json_values(input_json, worker_obj, private_key,
+                             constants.wo_submit_tamper)
+        input_work_order = self.compute_signature(
+            self.tamper)
+        logger.info('Compute Signature complete \n')
+
+        final_json_str = json.loads(input_work_order)
+        return final_json_str
+
+    def configure_data_sdk(
+            self, input_json, worker_obj, pre_test_response):
+
+        logger.info("JSON object %s \n", input_json)
+        self.set_worker_id(worker_obj.worker_id)
+        self.set_workload_id(input_json["params"]["workloadId"])
+        in_data = input_json["params"]["inData"]
+        worker_encrypt_key = worker_obj.encryption_key
+        logger.info("workload_id %s \n", self.get_workload_id())
+        # Convert workloadId to hex
+        workload_id = self.get_workload_id().encode("UTF-8").hex()
+        work_order_id = secrets.token_hex(32)
+        requester_id = secrets.token_hex(32)
+        requester_nonce = secrets.token_hex(16)
+        # Create work order params
+        wo_params = WorkOrderParams(
+            work_order_id, self.get_worker_id(), workload_id, requester_id,
+            self.session_key, self.session_iv, requester_nonce,
+            result_uri=" ", notify_uri=" ",
+            worker_encryption_key=worker_encrypt_key,
+            data_encryption_algorithm="AES-GCM-256"
+        )
+        logger.info("In data %s \n", in_data)
+        # Add worker input data
+        for rows in in_data:
+            for k, v in rows.items():
+                if k == "data":
+                    wo_params.add_in_data(rows["data"])
+
+        # Encrypt work order request hash
+        wo_params.add_encrypted_request_hash()
+
+        return wo_params

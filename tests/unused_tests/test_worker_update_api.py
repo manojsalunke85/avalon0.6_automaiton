@@ -16,22 +16,22 @@ import pytest
 import logging
 import json
 
-from automation_framework.utilities.post_request import \
+from src.utilities.post_request import \
     post_request
-from automation_framework.utilities.request_args import TestStep
-from automation_framework.utilities.workflow import validate_response_code
+from src.utilities.request_args import TestStep
+from src.utilities.workflow import validate_response_code
 
 logger = logging.getLogger(__name__)
 
 
-def test_worker_update_invalid_parameter(setup_config):
-    """ Testing worker update request with invalid valid parameter values. """
+def test_worker_update(setup_config):
+    """ Testing worker update request with all valid parameter values. """
 
     # retrieve values from conftest session fixture
     worker_obj, uri_client, private_key, err_cd = setup_config[:4]
 
     # input and output names
-    request = './worker_tests/input/worker_update_invalid_parameter.json'
+    request = './worker_tests/input/worker_update.json'
     request_mode = 'file'
     output_json_file_name = 'worker_update'
     tamper = {"params": {}}

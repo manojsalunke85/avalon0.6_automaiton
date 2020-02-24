@@ -58,3 +58,11 @@ class WorkOrderGetResult():
         json_rpc_request["params"] = self.get_params()
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(self, request_id, work_order_id):
+
+        self.set_work_order_id(work_order_id)
+        self.set_request_id(request_id)
+        input_get_result = json.loads(self.to_string())
+
+        return input_get_result

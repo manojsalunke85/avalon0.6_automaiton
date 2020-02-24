@@ -122,7 +122,7 @@ def decrypt_work_order_response(response, session_key, session_iv):
     return err_cd, decrypted_data
 
 
-def response_signature_verification(response, worker_obj, work_order_obj):
+def verify_test(response, worker_obj, work_order_obj):
 
     session_key = work_order_obj.session_key
     session_iv = work_order_obj.session_iv

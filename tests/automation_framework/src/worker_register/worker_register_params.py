@@ -24,6 +24,9 @@ class WorkerRegister():
         self.params_obj = {}
         self.details_obj = {}
         self.worker_type_data_obj = {}
+        self.request_mode = "file"
+        self.tamper = {"params": {}}
+        self.output_json_file_name = "worker_register"
 
     def add_json_values(self, input_json_temp, worker_obj, tamper):
 
@@ -124,3 +127,9 @@ class WorkerRegister():
         json_rpc_request["params"]["details"] = self.get_details()
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(
+            self, input_json, worker_obj, pre_test_response):
+        self.add_json_values(input_json, worker_obj, self.tamper)
+        final_json = json.loads(self.to_string())
+        return final_json

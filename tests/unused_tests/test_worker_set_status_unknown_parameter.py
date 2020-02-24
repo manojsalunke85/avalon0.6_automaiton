@@ -16,10 +16,10 @@ import pytest
 import logging
 import json
 
-from automation_framework.utilities.post_request import \
+from src.utilities.post_request import \
     post_request
-from automation_framework.utilities.request_args import TestStep
-from automation_framework.utilities.workflow import validate_response_code
+from src.utilities.request_args import TestStep
+from src.utilities.workflow import validate_response_code
 
 logger = logging.getLogger(__name__)
 

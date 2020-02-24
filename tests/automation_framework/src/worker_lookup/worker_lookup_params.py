@@ -14,6 +14,11 @@
 
 import json
 import logging
+from src.libs import constants
+import config.config as pconfig
+from avalon_client_sdk.direct.jrpc.worker_registry_jrpc_client import \
+    WorkerRegistryJRPCClientImpl
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +27,9 @@ class WorkerLookUp():
     def __init__(self):
         self.id_obj = {"jsonrpc": "2.0", "method": "WorkerLookUp", "id": 1}
         self.params_obj = {}
+        self.request_mode = "file"
+        self.tamper = {"params": {}}
+        self.output_json_file_name = "worker_lookup"
 
     def add_json_values(self, input_json_temp, tamper):
 
@@ -56,3 +64,33 @@ class WorkerLookUp():
         json_rpc_request["params"] = self.get_params()
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(
+            self, input_json, worker_obj, pre_test_response):
+        if input_json is None:
+            self.set_worker_type(1)
+        else:
+            self.add_json_values(input_json, self.tamper)
+        final_json = json.loads(self.to_string())
+        return final_json
+
+    def configure_data_sdk(
+            self, input_json, worker_obj, pre_test_response):
+
+        if input_json is None:
+            worker_type = 'SGX'
+        else:
+            try:
+                worker_value = input_json["params"]["workerType"]
+                if worker_value == 1:
+                    worker_type = 'SGX'
+                elif worker_value == 2:
+                    worker_type = 'MPC'
+                elif worker_value == 3:
+                    worker_type = 'ZK'
+                else:
+                    worker_type = worker_value
+            except LookupError:
+                worker_type = ""
+
+        return worker_type

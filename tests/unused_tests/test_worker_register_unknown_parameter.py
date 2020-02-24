@@ -16,28 +16,29 @@ import pytest
 import logging
 import json
 
-from automation_framework.utilities.post_request import \
+from src.utilities.post_request import \
     post_request
-from automation_framework.utilities.request_args import TestStep
-from automation_framework.utilities.workflow import validate_response_code
+from src.utilities.request_args import TestStep
+from src.utilities.workflow import validate_response_code
 
 logger = logging.getLogger(__name__)
 
 
-def test_worker_set_status(setup_config):
-    """ Testing set status request with all valid parameter values. """
+def test_worker_register_unknown_parameter(setup_config):
+    """ Testing worker update request with all valid parameter values. """
 
     # retrieve values from conftest session fixture
     worker_obj, uri_client, private_key, err_cd = setup_config[:4]
+
     # input and output names
-    request = './worker_tests/input/worker_set_status.json'
+    request = './worker_tests/input/worker_register_unknown_parameter.json'
     request_mode = 'file'
-    output_json_file_name = 'worker_set_status'
+    output_json_file_name = 'worker_register'
     tamper = {"params": {}}
-    request_method = "WorkerSetStatus"
+    request_method = ""
     request_id = 0
 
-    # submit worker update
+    # submit worker register
     request_tup = (request, request_mode, tamper, output_json_file_name,
                    uri_client, request_method, worker_obj,
                    request_id)

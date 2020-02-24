@@ -17,10 +17,10 @@ import logging
 import json
 from work_order_tests.work_order_tests import work_order_get_result_params, \
     work_order_request_params
-from automation_framework.work_order_submit.work_order_submit_utility \
+from src.work_order_submit.work_order_submit_utility \
     import verify_work_order_signature, decrypt_work_order_response
-from automation_framework.utilities.request_args import TestStep
-from automation_framework.utilities.workflow import validate_response_code
+from src.utilities.request_args import TestStep
+from src.utilities.workflow import validate_response_code
 
 logger = logging.getLogger(__name__)
 

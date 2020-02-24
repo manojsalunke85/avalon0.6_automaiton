@@ -23,6 +23,9 @@ class WorkerUpdate():
         self.id_obj = {"jsonrpc": "2.0", "method": "WorkerUpdate", "id": 11}
         self.params_obj = {}
         self.details_obj = {}
+        self.request_mode = "file"
+        self.tamper = {"params": {}}
+        self.output_json_file_name = "worker_update"
 
     def add_json_values(self, input_json_temp, worker_obj, tamper):
 
@@ -111,3 +114,9 @@ class WorkerUpdate():
         json_rpc_request["params"]["details"] = self.get_details()
 
         return json.dumps(json_rpc_request, indent=4)
+
+    def configure_data(
+            self, input_json, worker_obj, lookup_response):
+        self.add_json_values(input_json, worker_obj, self.tamper)
+        final_json = json.loads(self.to_string())
+        return final_json
