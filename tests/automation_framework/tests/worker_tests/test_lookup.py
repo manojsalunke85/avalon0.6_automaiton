@@ -17,144 +17,120 @@ import logging
 import os
 from src.libs import constants
 from src.utilities.verification_utils \
-    import check_worker_lookup_response, check_worker_retrieve_response, \
-    validate_response_code
+    import check_worker_lookup_response
 from src.libs.avalon_test_wrapper \
-    import process_input, read_json
+    import read_json, submit_request
 from src.utilities.generic_utils import TestStep
 import operator
-from src.utilities.submit_request_utility import \
-    submit_request, submit_lookup_sdk
+from src.libs.test_base import TestBase
 
 logger = logging.getLogger(__name__)
 
 
-def read_config(request_file):
-    raw_input_json = read_json(request_file)
-    return raw_input_json
+class TestClass():
+    test_obj = TestBase()
 
+    @pytest.mark.worker
+    @pytest.mark.worker_lookup
+    @pytest.mark.test_worker_lookup
+    @pytest.mark.listener
+    @pytest.mark.sdk
+    @pytest.mark.p1
+    def test_worker_lookup(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_lookup.json")
 
-def pre_test(setup_config):
-    uri_client = setup_config
-    logger.info("****URI Client******\n%s\n", uri_client)
-    return uri_client
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-
-@pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup
-@pytest.mark.listener
-@pytest.mark.sdk
-def test_worker_lookup(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_lookup.json")
-
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
-    else:
-        response = submit_lookup_sdk(
-            output_obj, read_config(request_file))
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.gt, 0)
-            is TestStep.SUCCESS.value)
+        assert (check_worker_lookup_response(response, operator.gt, 0)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        self.test_obj.teardown()
 
+        logger.info('\t\t!!! Test completed !!!\n\n')
 
-@pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_workerType_not_unsigned_int
-@pytest.mark.listener
-def test_worker_lookup_workerType_not_unsigned_int(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_lookup_workerType_not_unsigned_int.json")
+    @pytest.mark.worker
+    @pytest.mark.worker_lookup
+    @pytest.mark.test_worker_lookup_workerType_not_unsigned_int
+    @pytest.mark.listener
+    def test_worker_lookup_workerType_not_unsigned_int(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_lookup_workerType_not_unsigned_int.json")
 
-    uri_client = pre_test(setup_config)
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
-    else:
-        logger.info("***Test not applicable for SDK Direct mode ****\n")
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.eq, 0)
-            is TestStep.SUCCESS.value)
+        assert (check_worker_lookup_response(response, operator.eq, 0)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')
 
+    @pytest.mark.worker
+    @pytest.mark.worker_lookup
+    @pytest.mark.test_worker_lookup_empty_params
+    @pytest.mark.listener
+    def test_worker_lookup_empty_params(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_lookup_empty_params.json")
 
-@pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_empty_params
-@pytest.mark.listener
-def test_worker_lookup_empty_params(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_lookup_empty_params.json")
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
-    else:
-        logger.info("***Test not applicable for SDK Direct mode ****\n")
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.gt, 0)
-            is TestStep.SUCCESS.value)
+        assert (check_worker_lookup_response(response, operator.gt, 0)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')
 
+    @pytest.mark.worker
+    @pytest.mark.worker_lookup
+    @pytest.mark.test_worker_lookup_jsonrpc_different_version
+    @pytest.mark.listener
+    @pytest.mark.sdk
+    def test_worker_lookup_jsonrpc_different_version(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_lookup_jsonrpc_different_version.json")
 
-@pytest.mark.worker
-@pytest.mark.worker_lookup
-@pytest.mark.test_worker_lookup_jsonrpc_different_version
-@pytest.mark.listener
-@pytest.mark.sdk
-def test_worker_lookup_jsonrpc_different_version(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_lookup_jsonrpc_different_version.json")
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
-    else:
-        response = submit_lookup_sdk(
-            output_obj, read_config(request_file))
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (check_worker_lookup_response(response, operator.gt, 0)
-            is TestStep.SUCCESS.value)
+        assert (check_worker_lookup_response(response, operator.gt, 0)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')

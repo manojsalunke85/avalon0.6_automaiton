@@ -22,66 +22,37 @@ from src.utilities.verification_utils \
     import check_worker_lookup_response, check_worker_retrieve_response, \
     validate_response_code
 from src.libs.avalon_test_wrapper \
-    import process_input, read_json
+    import read_json, submit_request
 from src.utilities.generic_utils import TestStep
-import operator
-from src.utilities.submit_request_utility import \
-    submit_request, submit_retrieve_sdk
+from src.libs.test_base import TestBase
 
 logger = logging.getLogger(__name__)
 
 
-def read_config(request_file):
-    raw_input_json = read_json(request_file)
+class TestClass():
+    test_obj = TestBase()
 
-    return raw_input_json
+    @pytest.mark.worker
+    @pytest.mark.worker_retrieve
+    @pytest.mark.test_worker_retrieve
+    @pytest.mark.listener
+    @pytest.mark.sdk
+    @pytest.mark.p1
+    def test_worker_retrieve(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_retrieve.json")
 
+        err_cd = self.test_obj.setup_and_build_request_retrieve(
+            read_json(request_file))
 
-def pre_test(input_json_obj, setup_config):
-    uri_client = setup_config
-    if input_json_obj["method"] == "WorkerRetrieve":
-        lookup_obj = WorkerLookUp()
-        updated_json = lookup_obj.configure_data(
-            input_json=None, worker_obj=None, pre_test_response=None)
+        submit_response = submit_request(
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.wo_submit_output_json_file_name,
+            read_json(request_file))
 
-        response = submit_request(
-            uri_client, updated_json,
-            constants.worker_lookup_output_json_file_name)
+        assert (check_worker_retrieve_response(submit_response)
+                is TestStep.SUCCESS.value)
 
-        logger.info("**********Received Response*********\n%s\n", response)
-
-    else:
-        logger.info("Function called for wrong method name")
-        exit(1)
-
-    return response, uri_client
-
-
-@pytest.mark.worker
-@pytest.mark.worker_retrieve
-@pytest.mark.test_worker_retrieve
-@pytest.mark.listener
-@pytest.mark.sdk
-def test_worker_retrieve(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_retrieve.json")
-
-    pre_test_response, uri_client = pre_test(
-        read_config(request_file), setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file), pre_test_response=pre_test_response)
-
-    if constants.direct_test_mode == "listener":
-        response = submit_request(
-            uri_client, output_obj,
-            constants.worker_retrieve_output_json_file_name)
-    else:
-        response = submit_retrieve_sdk(
-            output_obj, read_config(request_file))
-
-    assert (check_worker_retrieve_response(response)
-            is TestStep.SUCCESS.value)
-
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')

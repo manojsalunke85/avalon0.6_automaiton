@@ -9,7 +9,7 @@ from src.utilities.generic_utils import TestStep
 logger = logging.getLogger(__name__)
 
 
-def validate_response_code(response):
+def validate_response_code(response, expected_res):
     """ Function to validate work order response.
         Input Parameters : response, check_result
         Returns : err_cd"""
@@ -21,31 +21,28 @@ def validate_response_code(response):
         if "code" in check_result[check_result_key].keys():
             if "code" in response[check_result_key].keys():
                 if (response[check_result_key]["code"] ==
-                        check_result[check_result_key]["code"]):
+                        expected_res):
                     err_cd = 0
-                    logger.info('SUCCESS: WorkOrderSubmit response'
-                                ' key (%s) and status (%s)!!\
-                                 \n', check_result_key,
-                                check_result[check_result_key]["code"])
-                elif (response[check_result_key]["code"] ==
-                        WorkOrderStatus.INVALID_PARAMETER_FORMAT_OR_VALUE):
-                    err_cd = 0
-                    logger.info('Invalid parameter format in response "%s".',
-                                response[check_result_key]["message"])
-                elif (response[check_result_key]["code"] ==
-                        WorkOrderStatus.SUCCESS):
-                    err_cd = 0
-                    logger.info('SUCCESS: Worker API response "%s"!!',
-                                response[check_result_key]["message"])
+                    if expected_res == 0:
+                        logger.info('SUCCESS: Worker API response "%s"!!',
+                                    response[check_result_key]["message"])
+                    elif expected_res == 2:
+                        logger.info(
+                            'Invalid parameter format in response "%s".',
+                            response[check_result_key]["message"])
+                    elif expected_res == 5:
+                        logger.info('SUCCESS: WorkOrderSubmit response'
+                                    ' key error and status (%s)!!\
+                                 \n', check_result[check_result_key]["code"])
                 else:
                     err_cd = 1
-                    logger.info('ERROR: Response did not contain expected \
-                            %s code %s. \n', check_result_key,
-                                check_result[check_result_key]["code"])
+                    logger.info(
+                        'ERROR: Response did not contain expected code '
+                        '%s.\n', check_result[check_result_key]["code"])
             else:
                 err_cd = 1
-                logger.info('ERROR: Response did not contain %s code \
-                           where expected. \n', check_result_key)
+                logger.info('ERROR: Response did not contain expected \
+                         code %s. \n', check_result[check_result_key]["code"])
     else:
         check_get_result = '''{"result": {"workOrderId": "", "workloadId": "",
                         "workerId": "", "requesterId": "", "workerNonce": "",
@@ -122,7 +119,7 @@ def decrypt_work_order_response(response, session_key, session_iv):
     return err_cd, decrypted_data
 
 
-def verify_test(response, worker_obj, work_order_obj):
+def verify_test(response, expected_res, worker_obj, work_order_obj):
 
     session_key = work_order_obj.session_key
     session_iv = work_order_obj.session_iv
@@ -139,7 +136,8 @@ def verify_test(response, worker_obj, work_order_obj):
     assert (decrypt_wo_response_err is TestStep.SUCCESS.value)
 
     # WorkOrderGetResult API Response validation with key parameters
-    validate_response_code_err = validate_response_code(response)
+    validate_response_code_err = validate_response_code(
+        response, expected_res)
 
     assert (validate_response_code_err is TestStep.SUCCESS.value)
 

@@ -20,75 +20,62 @@ from src.utilities.verification_utils \
     import check_worker_lookup_response, check_worker_retrieve_response, \
     validate_response_code
 from src.libs.avalon_test_wrapper \
-    import process_input, read_json
+    import read_json, submit_request
 from src.utilities.generic_utils import TestStep
-import operator
-from src.utilities.submit_request_utility import \
-    submit_request, submit_lookup_sdk
+from src.libs.test_base import TestBase
 
 logger = logging.getLogger(__name__)
 
 
-def read_config(request_file):
-    raw_input_json = read_json(request_file)
-    return raw_input_json
+class TestClass():
+    test_obj = TestBase()
 
+    @pytest.mark.worker
+    @pytest.mark.worker_register
+    @pytest.mark.test_worker_register
+    @pytest.mark.listener
+    def test_worker_register(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_register.json")
 
-def pre_test(setup_config):
-    uri_client = setup_config
-    logger.info("****URI Client******\n%s\n", uri_client)
-    return uri_client
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-
-@pytest.mark.worker
-@pytest.mark.worker_register
-@pytest.mark.test_worker_register
-@pytest.mark.listener
-def test_worker_register(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_register.json")
-
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (validate_response_code(response)
-            is TestStep.SUCCESS.value)
+        assert (validate_response_code(response, 0)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')
 
+    @pytest.mark.worker
+    @pytest.mark.worker_register
+    @pytest.mark.test_worker_register_unknown_parameter
+    @pytest.mark.listener
+    def test_worker_register_unknown_parameter(self):
+        request_file = os.path.join(
+            constants.worker_input_file,
+            "worker_register_unknown_parameter.json")
 
-@pytest.mark.worker
-@pytest.mark.worker_register
-@pytest.mark.test_worker_register_unknown_parameter
-@pytest.mark.listener
-def test_worker_register_unknown_parameter(setup_config):
-    request_file = os.path.join(
-        constants.worker_input_file,
-        "worker_register_unknown_parameter.json")
+        err_cd = self.test_obj.setup_and_build_request_lookup(
+            read_json(request_file))
 
-    uri_client = pre_test(setup_config)
-
-    output_obj, action_obj = process_input(
-        read_config(request_file))
-
-    if constants.direct_test_mode == "listener":
         response = submit_request(
-            uri_client, output_obj,
-            constants.worker_lookup_output_json_file_name)
+            self.test_obj.uri_client,
+            self.test_obj.build_request_output['request_obj'],
+            constants.worker_lookup_output_json_file_name,
+            read_json(request_file))
 
-    logger.info("**********Received Response*********\n%s\n", response)
+        logger.info("**********Received Response*********\n%s\n", response)
 
-    assert (validate_response_code(response)
-            is TestStep.SUCCESS.value)
+        assert (validate_response_code(response, 2)
+                is TestStep.SUCCESS.value)
 
-    logger.info('\t\t!!! Test completed !!!\n\n')
+        logger.info('\t\t!!! Test completed !!!\n\n')

@@ -24,12 +24,10 @@ from src.worker_lookup.worker_lookup_params \
 from src.worker_retrieve.worker_retrieve_params \
     import WorkerRetrieve
 from src.libs.avalon_test_wrapper \
-    import process_input, read_json
+    import read_json, submit_request
 from src.utilities.generic_utils import TestStep
-import operator
 import avalon_client_sdk.worker.worker_details as worker
-from src.utilities.submit_request_utility import \
-    submit_request, submit_lookup_sdk
+from src.libs.test_base import TestBase
 
 logger = logging.getLogger(__name__)
 

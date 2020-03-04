@@ -72,6 +72,8 @@ class WorkerSetStatus():
 
     def configure_data(
             self, input_json, worker_obj, lookup_response):
+        logger.info(" Request json %s \n", input_json)
         self.add_json_values(input_json, worker_obj, self.tamper)
         final_json = json.loads(self.to_string())
+        logger.info(" Final json %s \n", final_json)
         return final_json

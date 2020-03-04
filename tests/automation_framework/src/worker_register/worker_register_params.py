@@ -32,9 +32,9 @@ class WorkerRegister():
 
         if "workerId" in input_json_temp["params"].keys():
             if input_json_temp["params"]["workerId"] != "":
-                self.set_worker_type(input_json_temp["params"]["workerId"])
+                self.set_worker_id(input_json_temp["params"]["workerId"])
             else:
-                self.set_worker_type(worker_obj.worker_id)
+                self.set_worker_id(worker_obj.worker_id)
 
         if "id" in input_json_temp.keys():
             self.set_request_id(input_json_temp["id"])
@@ -47,24 +47,24 @@ class WorkerRegister():
 
         if "organizationId" in input_json_temp["params"].keys():
             if input_json_temp["params"]["organizationId"] != "":
-                self.set_worker_type(
+                self.set_organizationId(
                     input_json_temp["params"]["organizationId"])
             else:
-                self.set_worker_type(worker_obj.organization_id)
+                self.set_organizationId(worker_obj.organization_id)
 
         if "applicationTypeId" in input_json_temp["params"].keys():
             if input_json_temp["params"]["applicationTypeId"] != "":
-                self.set_worker_type(
+                self.set_applicationTypeId(
                     input_json_temp["params"]["applicationTypeId"])
             else:
-                self.set_worker_type(worker_obj.application_type_id)
+                self.set_applicationTypeId(worker_obj.application_type_id)
 
         if "workerEncryptionKey" in input_json_temp["params"].keys():
             if input_json_temp["params"]["workerEncryptionKey"] != "":
-                self.set_worker_type(
+                self.set_workerEncryptionKey(
                     input_json_temp["params"]["workerEncryptionKey"])
             else:
-                self.set_worker_type(worker_obj.worker_encryption_key)
+                self.set_workerEncryptionKey(worker_obj.worker_encryption_key)
 
         if "details" in input_json_temp["params"].keys():
             if ("hashingAlgorithm" in
@@ -96,6 +96,18 @@ class WorkerRegister():
 
     def set_unknown_parameter(self, param, value):
         self.params_obj[param] = value
+
+    def set_worker_id(self, worker_id):
+        self.params_obj["workerId"] = worker_id
+
+    def set_organizationId(self, organizationId):
+        self.params_obj["organizationId"] = organizationId
+
+    def set_applicationTypeId(self, applicationTypeId):
+        self.params_obj["applicationTypeId"] = applicationTypeId
+
+    def set_workerEncryptionKey(self, workerEncryptionKey):
+        self.params_obj["workerEncryptionKey"] = workerEncryptionKey
 
     def set_worker_type(self, worker_type):
         self.params_obj["workerType"] = worker_type
@@ -130,6 +142,8 @@ class WorkerRegister():
 
     def configure_data(
             self, input_json, worker_obj, pre_test_response):
+        logger.info(" Request json %s \n", input_json)
         self.add_json_values(input_json, worker_obj, self.tamper)
         final_json = json.loads(self.to_string())
+        logger.info(" Final json %s \n", final_json)
         return final_json
