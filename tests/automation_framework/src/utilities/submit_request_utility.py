@@ -226,6 +226,28 @@ def submit_retrieve_sdk(worker_id, input_json=None):
         return worker_retrieve_result
 
 
+def submit_update_sdk(update_params, input_json=None):
+    logger.info("SDK code path\n")
+    logger.info("Worker update params %s \n", update_params)
+    worker_obj = worker_details.SGXWorkerDetails()
+    # update_params = json.loads(update_params)
+    if input_json is None:
+        jrpc_req_id = 11
+    else:
+        jrpc_req_id = input_json["id"]
+    config = pconfig.parse_configuration_files(
+        constants.conffiles, constants.confpaths)
+    logger.info(" URI client %s \n", config["tcf"]["json_rpc_uri"])
+    worker_registry = _create_worker_registry_instance(globals.blockchain_type, config)
+    if not constants.proxy_mode:
+        worker_update_result = worker_registry.worker_update(
+            eval(str(update_params))["worker_id"],
+            eval(str(update_params))["details"], jrpc_req_id)
+        logger.info("\n Worker update response: {}\n".format(
+            json.dumps(worker_update_result, indent=4)))
+
+    return worker_update_result
+
 def submit_create_receipt_sdk(wo_create_receipt, input_json):
     logger.info("SDK code path\n")
     jrpc_req_id = input_json["id"]

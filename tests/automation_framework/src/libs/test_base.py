@@ -72,6 +72,16 @@ class TestBase():
     def teardown(self):
         logger.info("**No Teardown Defined**\n%s\n")
 
+    def setup_and_build_request_worker_update(self, input_file):
+        pre_test_output = pre_test_env(input_file)
+        request_obj, action_obj = build_request_obj(
+            input_file, pre_test_response=pre_test_output)
+        self.build_request_output.update(
+            {'request_obj': request_obj,
+             'pre_test_output': pre_test_output,
+             'action_obj': action_obj})
+        return 0
+
     def getresult(self, output_obj):
 
         if constants.direct_test_mode == "listener":

@@ -24,7 +24,8 @@ from src.utilities.submit_request_utility import \
     submit_request_listener, submit_lookup_sdk, \
     submit_retrieve_sdk, submit_create_receipt_sdk, \
     submit_work_order_sdk, submit_register_sdk, \
-    submit_setstatus_sdk, submit_retrieve_receipt_sdk
+    submit_setstatus_sdk, submit_retrieve_receipt_sdk, \
+    submit_update_sdk
 from src.libs.direct_listener import ListenerImpl
 from src.libs.direct_sdk import SDKImpl
 import globals
@@ -121,6 +122,9 @@ def submit_request(uri_client, output_obj, output_file, input_file):
         elif request_method == "WorkerSetStatus":
             submit_response = submit_setstatus_sdk(
                 output_obj, input_file)
+        elif request_method == "WorkerUpdate":
+            submit_response = submit_update_sdk(
+                output_obj, input_file)
     return submit_response
 
 
@@ -143,7 +147,8 @@ def pre_test_env(input_file):
     request_method = input_file["method"]
     impl_type = impl_instance()
 
-    if request_method == "WorkerRetrieve":
+    if request_method == "WorkerRetrieve" or \
+            request_method == "WorkerUpdate":
 
         lookup_response = impl_type.worker_lookup()
         logger.info("******Received Response******\n%s\n", lookup_response)
@@ -167,8 +172,7 @@ def pre_test_env(input_file):
         wo_create_receipt = impl_type.work_order_create_receipt(wo_submit)
         return worker_obj, wo_submit
 
-    if request_method == "WorkerUpdate" or \
-            request_method == "WorkerSetStatus" or \
+    if request_method == "WorkerSetStatus" or \
             request_method == "WorkerRegister":
         logger.info("No setup required for \n%s\n", request_method)
         return 0

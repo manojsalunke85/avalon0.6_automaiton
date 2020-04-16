@@ -14,6 +14,10 @@
 
 import json
 import logging
+from src.libs import constants
+import globals
+import avalon_sdk.worker.worker_details as worker
+import avalon_crypto_utils.crypto_utility as crypto_utils
 
 logger = logging.getLogger(__name__)
 
@@ -50,33 +54,39 @@ class WorkerUpdate():
                 else:
                     self.set_hashing_algorithm(worker_obj.hashing_algorithm)
 
-            if ("signingAlgorithm" in
+            elif ("signingAlgorithm" in
                     input_json_temp["params"]["details"].keys()):
                 self.set_signing_algorithm(
                     input_json_temp["params"]["details"]["signingAlgorithm"])
 
-            if ("keyEncryptionAlgorithm" in
+            elif ("keyEncryptionAlgorithm" in
                     input_json_temp["params"]["details"].keys()):
                 self.set_key_encryption_algorithm(
                     input_json_temp["params"]
                     ["details"]["keyEncryptionAlgorithm"])
 
-            if ("dataEncryptionAlgorithm" in
+            elif ("dataEncryptionAlgorithm" in
                     input_json_temp["params"]["details"].keys()):
                 self.set_data_encryption_algorithm(
                     input_json_temp["params"]
                     ["details"]["dataEncryptionAlgorithm"])
+            else:
+                for key in \
+                        input_json_temp["params"]["details"].keys():
+                    param = key
+                    value = input_json_temp["params"]["details"][key]
+                    self.set_unknown_parameter_detail(param, value)
 
-        for key in tamper["params"].keys():
-            param = key
-            value = tamper["params"][key]
-            self.set_unknown_parameter(param, value)
+                ''' for key in input_json_temp["params"].keys():
+                    param = key
+                    value = tamper["params"][key]
+                    self.set_unknown_parameter(param, value)
 
-        if "details" in tamper["params"].keys():
+            if "details" in tamper["params"].keys():
             for key in tamper["params"]["details"].keys():
                 detail = key
                 value = tamper["params"]["details"][key]
-                self.set_unknown_parameter_detail(param, value)
+                self.set_unknown_parameter_detail(param, value)'''
 
     def set_unknown_parameter(self, param, value):
         self.params_obj[param] = value
@@ -116,7 +126,50 @@ class WorkerUpdate():
         return json.dumps(json_rpc_request, indent=4)
 
     def configure_data(
-            self, input_json, worker_obj, lookup_response):
-        self.add_json_values(input_json, worker_obj, self.tamper)
-        final_json = json.loads(self.to_string())
-        return final_json
+            self, input_json, worker_obj, pre_test_response):
+        worker_obj = worker.SGXWorkerDetails()
+        if input_json is not None:
+            self.add_json_values(
+                input_json, worker_obj, self.tamper)
+        self.set_worker_id(
+            crypto_utils.strip_begin_end_public_key
+            (pre_test_response["result"]["ids"][0]))
+
+        input_worker_retrieve = json.loads(self.to_string())
+        logger.info('*****Worker details Updated with Worker ID***** \
+                           \n%s\n', input_worker_retrieve)
+        return input_worker_retrieve
+
+    def configure_data_sdk(
+            self, input_json, worker_obj, pre_test_response):
+        if constants.proxy_mode and \
+            globals.blockchain_type == "ethereum":
+            if "result" in pre_test_response and \
+                "ids" in pre_test_response["result"].keys():
+                if pre_test_response["result"]["totalCount"] != 0:
+                    worker_id = pre_test_response["result"]["ids"]
+                    # Filter workers by status(active) field
+                    # Return first worker whose status is active
+                else:
+                    logger.error("No workers found")
+            else:
+                logger.error("Failed to lookup worker")
+        elif constants.proxy_mode and \
+            globals.blockchain_type == "fabric":
+            worker_id = pre_test_response[2][0]
+        else:
+            if "result" in pre_test_response and \
+                "ids" in pre_test_response["result"].keys():
+                if pre_test_response["result"]["totalCount"] != 0:
+                    worker_id = pre_test_response["result"]["ids"][0]
+                else:
+                    logger.error("ERROR: No workers found")
+                    worker_id = None
+            else:
+                logger.error("ERROR: Failed to lookup worker")
+                worker_id = None
+        details = input_json["params"]["details"]
+
+        update_params = {"worker_id": worker_id, "details": details}
+
+        return update_params
